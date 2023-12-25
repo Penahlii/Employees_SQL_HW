@@ -1,0 +1,129 @@
+/* 1. Get empid, firstname, lastname, country, region, city of all employees from USA. */
+
+USE [Employees]
+
+SELECT 
+	FIRSTNAME,
+	LASTNAME,
+	COUNTRYREGIONNAME,
+	CITY
+FROM Employees
+WHERE COUNTRYREGIONNAME = 'United States'
+
+
+/* 2. Get the number of employees for each specialty. */
+
+SELECT
+    JobTitle,
+    COUNT(*) AS [Number Of Employees]
+FROM Employees
+GROUP BY JobTitle
+
+
+/* 3. Count the number of people for each name. */
+
+SELECT 
+	FIRSTNAME,
+	COUNT(*) AS [Number Of Names]
+FROM Employees
+GROUP BY FIRSTNAME
+
+
+/* 4. Get the most common name. */
+
+SELECT TOP 1
+    FirstName,
+    COUNT(*) AS [Count Of Name]
+FROM Employees
+GROUP BY FIRSTNAME
+ORDER BY [Count Of Name] DESC
+
+
+/* 5. Get the least common name. */
+
+SELECT TOP 1
+	FIRSTNAME,
+	COUNT(*) AS [Count Of Name]
+FROM Employees
+GROUP BY FIRSTNAME
+ORDER BY [Count Of Name] ASC
+
+
+/* 6. Get the top 5 cities where the most workers are. */
+
+SELECT TOP 5
+	CITY,
+	COUNT(*) AS [Count Of Employees]
+FROM Employees
+GROUP BY CITY
+ORDER BY [Count Of Employees] DESC
+
+
+/* 7. Get the top 5 cities, which have the most unique specialties. */
+
+SELECT TOP 5
+    City,
+    COUNT(DISTINCT JobTitle) AS [Specialist Count]
+FROM Employees
+GROUP BY CITY
+ORDER BY [Specialist Count] DESC;
+
+
+/* 8. Issue mailing addresses for emailing to all employees who started working on 1/01/2012. */
+
+SELECT EMAILADDRESS, STARTDATE        
+FROM Employees
+WHERE STARTDATE = '2012-01-01' -- DATABASE DE BU TARIXDE ISE BASLAYAN ISCI YOXDUR
+
+
+/* 9. Issue statistics in what year how many employees were employed. */
+
+SELECT
+	YEAR(STARTDATE) AS [YEAR],
+	COUNT(*) AS [NUMBER OF EMPLOYEES]
+FROM Employees
+GROUP BY YEAR(STARTDATE)
+ORDER BY [YEAR]
+
+
+/* 10. Issue statistics in which year how many workers in which countries were employed. */
+
+SELECT 
+	YEAR(STARTDATE) AS [YEAR],
+	COUNTRYREGIONNAME AS [COUNTRY],
+	COUNT(*) AS [NUMBER OF EMPLOYEES]
+FROM Employees
+GROUP BY 
+	YEAR(STARTDATE),
+	COUNTRYREGIONNAME
+ORDER BY
+	[YEAR],
+	COUNTRYREGIONNAME
+
+
+/* 11. Refresh the Employees table by adding data from the History table to the EndDate column. */
+
+UPDATE Employees
+SET Employees.ENDDATE = History.ENDDATE
+FROM Employees
+JOIN History ON Employees.BUSINESSENTITYID = History.BUSINESSENTITYID;
+
+
+/* 12. Issue statistics on how many employees in which year they left. */
+
+SELECT 
+	YEAR(ENDDATE) AS [YEAR],
+	COUNT(*) AS [NUMBER OF EMPLOYEES]
+FROM Employees
+WHERE ENDDATE IS NOT NULL
+GROUP BY YEAR(ENDDATE)
+ORDER BY [YEAR]
+
+
+/* 13. Issue the number of employees who have worked less than a year. */
+
+SELECT COUNT(*) AS [NUMBER OF EMPLOYEES]
+FROM Employees
+WHERE
+    DATEDIFF([MONTH], STARTDATE, ENDDATE) < 12
+    OR EndDate IS NULL;
